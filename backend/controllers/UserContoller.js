@@ -44,16 +44,27 @@ export const userLogin = async (req, res) => {
             return res.json({ success: false, message: error.message })
         }
 
-        const isMatch = await bcrypt.compare(password,user.password)
+        const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-            return res.json({success:false,message:"Invalid Credentials"})
+            return res.json({ success: false, message: "Invalid Credentials" })
         }
         const token = generateToken(user._id.toString());
-        res.json({success:true,token})
+        res.json({ success: true, token })
 
     } catch (error) {
         console.log(error.message);
         res.json({ success: false, message: error.message })
 
+    }
+}
+
+//Get user data using token
+export const getUserData = async (req, res) => {
+    try {
+        const { user } = req;
+        res.json({ success: true, user })
+    } catch (error) {
+        console.log(error.message);
+        res.json({ success: false, message: error.message })
     }
 }
