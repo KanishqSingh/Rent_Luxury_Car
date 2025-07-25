@@ -1,5 +1,5 @@
 import express from 'express'
-import { getUserData, registerUser, userLogin } from '../controllers/UserContoller.js';
+import { getCars, getUserData, registerUser, userLogin } from '../controllers/UserContoller.js';
 import { protect } from '../middleware/auth.js';
 
 const userRouter = express.Router();
@@ -7,5 +7,7 @@ const userRouter = express.Router();
 userRouter.post('/register',registerUser);
 userRouter.post('/login',userLogin);
 userRouter.get('/data',protect,getUserData);
+userRouter.get('/cars',getCars);
+
 
 export default userRouter;
