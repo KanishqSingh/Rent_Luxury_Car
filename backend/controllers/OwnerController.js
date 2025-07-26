@@ -140,9 +140,8 @@ export const getDashBoardData = async (req, res) => {
     try {
 
         const { _id, role } = req.user;
-
-
-        if (role !== owner) {
+        
+        if (role !== "owner") {
             return res.json({ success: false, message: "unauthorized" })
 
         }
@@ -163,6 +162,9 @@ export const getDashBoardData = async (req, res) => {
             recentBookings: bookings.slice(0, 3),
             monthlyRevenue
         }
+
+        console.log(dashBoardData.totalCars);
+        
 
         res.json({ success: true, dashBoardData })
 

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import { assets, dummyDashboardData } from '../../assets/assets';
+
+import React, { useEffect, useState } from 'react';
+import { assets } from '../../assets/assets';
 import Title from '../../Components/Title';
 import { useAppContext } from '../../context/AppContext';
-import { toast } from 'react-hot-toast'
+import { toast } from 'react-hot-toast';
 
 const DashBoard = () => {
-
     const { axios, isOwner } = useAppContext();
 
     const [datax, setDatax] = useState({
@@ -18,35 +18,30 @@ const DashBoard = () => {
     });
 
     const fetchDashBoardData = async () => {
-
         try {
-            const response = await axios.get('/api/owner/dashboard')
-            const { data } = response
+            const response = await axios.get('/api/owner/dashboard');
+            const { data } = response;
+
             if (data.success) {
-
+    
                 setDatax(data.dashBoardData);
-
-
             } else {
-                toast.error(data.message)
+                toast.error(data.message);
                 console.log(data.message);
-
             }
         } catch (error) {
-            toast.error(error.message)
-
+            toast.error(error.message);
+            console.log(error);
         }
+    };
 
-    }
-
+  
 
     useEffect(() => {
         if (isOwner) {
-            fetchDashBoardData()
+            fetchDashBoardData();
         }
     }, [isOwner]);
-
-
 
     const DashBoardCards = [
         {
@@ -68,7 +63,7 @@ const DashBoard = () => {
             title: "Confirmed",
             value: datax.completedBookings,
             icon: assets.listIconColored
-        },
+        }
     ];
 
     return (
@@ -92,7 +87,6 @@ const DashBoard = () => {
 
             {/* Bottom Section */}
             <div className='flex flex-col lg:flex-row gap-6 w-full mb-10'>
-
                 {/* Recent Bookings */}
                 <div className='bg-white shadow-md rounded-2xl p-6 flex-1'>
                     <h1 className="text-lg font-semibold text-gray-800">Recent Bookings</h1>
@@ -111,8 +105,9 @@ const DashBoard = () => {
                             </div>
                             <div className='flex items-center gap-2'>
                                 <p className='text-sm font-medium text-gray-700'>${booking.price}</p>
-                                <p className={`px-3 py-0.5 border rounded-full text-sm font-medium ${booking.status === 'Pending' ? 'text-yellow-600 border-yellow-400' : 'text-green-600 border-green-400'
-                                    }`}>
+                                <p className={`px-3 py-0.5 border rounded-full text-sm font-medium ${
+                                    booking.status === 'Pending' ? 'text-yellow-600 border-yellow-400' : 'text-green-600 border-green-400'
+                                }`}>
                                     {booking.status}
                                 </p>
                             </div>
@@ -127,10 +122,9 @@ const DashBoard = () => {
                     <div className='mt-4 text-3xl font-bold text-green-600'>${datax.monthlyRevenue}</div>
                     <p className="text-xs text-gray-400 mt-1">Includes all completed bookings</p>
                 </div>
-
             </div>
         </div>
     );
-}
+};
 
 export default DashBoard;

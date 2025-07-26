@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 import TitleOwner from '../../Components/Owner/TitleOwner';
 import { assets } from '../../assets/assets';
+import { useAppContext } from '../../context/AppContext';
+import {toast} from 'react-hot-toast'
 
 const AddCar = () => {
+    const { axios } = useAppContext();
+
     const [image, setImage] = useState(null);
     const [car, setCar] = useState({
         brand: '',
@@ -17,9 +21,47 @@ const AddCar = () => {
         category: '',
     });
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const onSubmitHandler = async (e) => {
         e.preventDefault();
-        console.log(car);
+        if (isLoading) {
+            return null;
+        }
+        setIsLoading(true);
+        try {
+            const formData = new FormData();
+            formData.append('image', image);
+            formData.append('carData', JSON.stringify(car))
+
+            const { data } = await axios.post('/api/owner/add-car', formData)
+
+            if (data.success) {
+                toast.success(data.message)
+                setImage(null);
+                setCar({
+
+                    brand: '',
+                    model: '',
+                    year: '',
+                    pricePerDay: '',
+                    transmission: '',
+                    fuel_type: '',
+                    seating_capacity: '',
+                    location: '',
+                    description: '',
+                    category: '',
+
+                })
+            }else{
+                toast.error(data.message)
+            }
+        } catch (error) {
+            toast.error(error.message)
+        }
+        finally{
+            setIsLoading(false)
+        }
     };
 
     return (
@@ -150,7 +192,7 @@ const AddCar = () => {
                 {/* Submit Button */}
                 <button type='submit' className='flex items-center gap-2 bg-blue-600 text-white px-5 py-2 rounded-md hover:bg-blue-700 transition-all duration-200'>
                     <img src={assets.tick_icon} alt="tick" className='h-5 w-5' />
-                    List Your Car
+                    {isLoading ? 'Listing!! Wait' : 'List Your Car'}
                 </button>
             </form>
         </div>
