@@ -1,12 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { dummyMyBookingsData } from '../../assets/assets';
+
 import TitleOwner from '../../Components/Owner/TitleOwner';
+import { useAppContext } from '../../context/AppContext';
+import toast from 'react-hot-toast';
 
 const ManageBooking = () => {
+  const { axios } = useAppContext();
   const [bookings, setBookings] = useState([]);
 
   const fetchOwnerBookings = async () => {
-    setBookings(dummyMyBookingsData);
+    try {
+      const { data } = await axios.get('/api/bookings/owner');
+      data.success ? setBookings(data.bookings) : toast.error(data.message);
+    } catch (error) {
+      toast.error(error.message)
+
+    }
+
+  };
+
+  const changeBookingStatus = async (bookingId, status) => {
+    try {
+      const { data } = await axios.post('/api/bookings/change-status', { bookingId, status });
+      if (data.success) {
+        toast.success(data.essage)
+        fetchOwnerBookings();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   };
 
   useEffect(() => {
@@ -63,7 +87,7 @@ const ManageBooking = () => {
 
                 <td className="p-4 max-md:hidden">
                   {booking.status === 'pending' ? (
-                    <select
+                    <select onChange={() => changeBookingStatus(booking._id,e.target.value)}
                       className="border rounded-md p-1 text-sm"
                       value={booking.status}
 
@@ -75,10 +99,10 @@ const ManageBooking = () => {
                   ) : (
                     <span
                       className={`px-2 py-1 text-xs font-medium rounded-full ${booking.status === 'confirmed'
-                          ? 'bg-green-100 text-green-700'
-                          : booking.status === 'cancelled'
-                            ? 'bg-red-100 text-red-700'
-                            : 'bg-yellow-100 text-yellow-700'
+                        ? 'bg-green-100 text-green-700'
+                        : booking.status === 'cancelled'
+                          ? 'bg-red-100 text-red-700'
+                          : 'bg-yellow-100 text-yellow-700'
                         }`}
                     >
                       {booking.status}
