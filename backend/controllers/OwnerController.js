@@ -80,58 +80,61 @@ export const getOwnerCars = async (req, res) => {
 //toggle car availabilty
 
 export const toggleCarAvailabilty = async (req, res) => {
-
-
     try {
-
         const { _id } = req.user;
         const { carId } = req.body;
-        const car = await Car.find(carId)
+
+        const car = await Car.findById(carId); // ✅ Correct
+
+        if (!car) {
+            return res.json({ success: false, message: "Car not found" });
+        }
 
         if (car.owner.toString() !== _id.toString()) {
-            return res.json({ success: false, message: "unauthorized" })
-
+            return res.json({ success: false, message: "Unauthorized" });
         }
+
         car.isAvailable = !car.isAvailable;
-        await car.save()
+        await car.save();
 
-        res.json({ success: true, message: "Availability Toggled" })
-
+        res.json({ success: true, message: "Availability Toggled" });
 
     } catch (error) {
         console.log(error.message);
-        res.json({ success: false, message: error.message })
-
+        res.json({ success: false, message: error.message });
     }
-}
+};
+
 
 //api to delete car
 export const deleteCar = async (req, res) => {
-
-
     try {
-
         const { _id } = req.user;
-        const { carId } = req.body;
-        const car = await Car.find(carId)
+        const { carId } = req.body;  
+
+        const car = await Car.findById(carId); // ✅ Correct
+
+
+        if (!car) {
+            return res.json({ success: false, message: "Car not found" });
+        }
 
         if (car.owner.toString() !== _id.toString()) {
-            return res.json({ success: false, message: "unauthorized" })
-
+            return res.json({ success: false, message: "Unauthorized" });
         }
+
         car.owner = null;
         car.isAvailable = false;
-        await car.save()
+        await car.save();
 
-        res.json({ success: true, message: "Car removed" })
-
+        res.json({ success: true, message: "Car removed" });
 
     } catch (error) {
         console.log(error.message);
-        res.json({ success: false, message: error.message })
-
+        res.json({ success: false, message: error.message });
     }
-}
+};
+
 
 //Dashboard data
 export const getDashBoardData = async (req, res) => {
@@ -140,7 +143,7 @@ export const getDashBoardData = async (req, res) => {
     try {
 
         const { _id, role } = req.user;
-        
+
         if (role !== "owner") {
             return res.json({ success: false, message: "unauthorized" })
 
@@ -164,7 +167,7 @@ export const getDashBoardData = async (req, res) => {
         }
 
         console.log(dashBoardData.totalCars);
-        
+
 
         res.json({ success: true, dashBoardData })
 
@@ -183,7 +186,7 @@ export const updateUserImage = async (req, res) => {
     try {
 
         const { _id } = req.user;
-     
+
         const imageFile = req.file;
 
         const fileBuffer = fs.readFileSync(imageFile.path);
@@ -207,9 +210,9 @@ export const updateUserImage = async (req, res) => {
 
         const image = optimizedImageUrl;
 
-        await User.findByIdAndUpdate(_id,{image});
+        await User.findByIdAndUpdate(_id, { image });
 
-        res.json({success:true,message:"Image updated"})
+        res.json({ success: true, message: "Image updated" })
 
         res.json({ success: true, message: "Car Added" })
 
