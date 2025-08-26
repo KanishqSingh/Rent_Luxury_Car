@@ -171,7 +171,7 @@ export const getDashBoardData = async (req, res) => {
 
         res.json({ success: true, dashBoardData })
 
-        res.json({ success: true, message: "Availability Toggled" })
+        // res.json({ success: true, message: "Availability Toggled" })
 
 
     } catch (error) {
@@ -214,7 +214,7 @@ export const updateUserImage = async (req, res) => {
 
         res.json({ success: true, message: "Image updated" })
 
-        res.json({ success: true, message: "Car Added" })
+        // res.json({ success: true, message: "Car Added" })
 
 
     } catch (error) {

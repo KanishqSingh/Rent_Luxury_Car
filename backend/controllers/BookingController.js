@@ -13,38 +13,49 @@ const checkAvailability = async(car,pickupDate,returnDate)=>{
 }
 
 //api to check availabilty of cars for the given date and location
-export const checkAvailabilityOfCar = async(req,res)=>{
-    try {
+export const checkAvailabilityOfCar = async (req, res) => {
+  try {
+    const { location, pickupDate, returnDate } = req.body;
 
-        const {location,pickupDate,returnDate} = req.body;
+    const cars = await Car.find({ 
+location, isAvailable: true });
+    console.log('location',cars);
+    
 
-        const cars = await Car.find({location,isAvailable:true})
+    // check car availability using promises
+    const availableCarsPromise = cars.map(async (car) => {
+      const isAvailable = await checkAvailability(car._id, pickupDate, returnDate);
+      return { ...car._doc, isAvailable: isAvailable };
+    });
 
-        //check car availaiblity using promise
-        const availableCarsPromise = cars.map(async(car)=>{
-            const isAvailable =  await checkAvailability(car._id,pickupDate,returnDate)
-            return {...car._doc,isAvailable: isAvailable}
-        })
+    let availableCars = await Promise.all(availableCarsPromise);
+    availableCars = availableCars.filter((car) => car.isAvailable === true);
 
-        let availableCars = await Promise.all(availableCarsPromise)
-        availableCars = availableCars.filter(car => car.isAvailable === true)
+    return res.json({ success: true, availableCars });
+  } catch (error) {
+    console.log(error.message);
+    return res.json({ success: false, message: error.message });
+  }
+};
 
-        res.json({success:true,availableCars})
-        
-    } catch (error) {
-        console.log(error.message);
-        res.json({ success: false, message: error.message })
-        
-    }
-}
 
 //api to create booking
 export const createBooking = async(req,res)=>{
     try {
-
+        
+        console.log("req.user -- ",req.user);
+        
         const {_id} = req.user;
+        console.log("_id -- ",_id);
+        
         const {car,pickupDate,returnDate} = req.body;
+
+        if (!pickupDate || !returnDate) {
+  return res.json({ success: false, message: "Pickup and return date are required" });
+}
         const isAvailable = await checkAvailability(car,pickupDate,returnDate)
+
+
 
         if(!isAvailable){
             return res.json({ success: false, message: "car not available" })
@@ -79,8 +90,9 @@ export const getUserBookings = async(req,res)=>{
 
         const {_id} = req.user;
         const bookings = await Booking.find({user:_id}).populate("car").sort({createdAt:-1})
-
-        res.json({success:true,bookings})
+        
+    
+        return res.json({success:true,bookings})
         
     } catch (error) {
         console.log(error.message);
@@ -94,7 +106,7 @@ export const getUserBookings = async(req,res)=>{
 export const getOwnerBooking = async(req,res)=>{
     try {
 
-        if (req.user.rols !== 'owner') {
+        if (req.user.role !== 'owner') {
             return res.json({success:false,message:"unauthorized"})
         }
 
