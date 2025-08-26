@@ -1,8 +1,18 @@
 import React, { useState } from 'react';
 import { assets, cityList } from '../assets/assets';
+import { useAppContext } from '../context/AppContext';
 
 const Hero = () => {
   const [pickupLocation, setPickupLocation] = useState('');
+  const { navigate, pickupDate, setPickupDate, returnDate, setReturnDate } = useAppContext();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    navigate(
+      `/cars?pickupLocation=${pickupLocation}&pickupDate=${pickupDate}&returnDate=${returnDate}`
+    );
+  };
+
 
   return (
     <div className="min-h-screen bg-light flex flex-col items-center justify-center px-4 py-10 md:py-20 text-center gap-12">
@@ -10,7 +20,7 @@ const Hero = () => {
         Luxury Cars on Rent
       </h1>
 
-      <form className="w-full max-w-5xl bg-white shadow-xl rounded-2xl p-6 sm:p-8 flex flex-col gap-6 md:flex-row md:items-end justify-between">
+      <form onSubmit={handleSearch} className="w-full max-w-5xl bg-white shadow-xl rounded-2xl p-6 sm:p-8 flex flex-col gap-6 md:flex-row md:items-end justify-between">
 
         {/* Pickup Location */}
         <div className="flex flex-col gap-2 w-full md:w-1/4 min-h-[90px]">
@@ -40,7 +50,8 @@ const Hero = () => {
           <label htmlFor="pickup-date" className="text-sm font-medium text-gray-600">
             Pickup Date
           </label>
-          <input
+          <input value={pickupDate}
+            onChange={e => setPickupDate(e.target.value)}
             type="date"
             id="pickup-date"
             min={new Date().toISOString().split('T')[0]}
@@ -54,7 +65,8 @@ const Hero = () => {
           <label htmlFor="return-date" className="text-sm font-medium text-gray-600">
             Return Date
           </label>
-          <input
+          <input value={returnDate}
+            onChange={e => setReturnDate(e.target.value)}
             type="date"
             id="return-date"
             className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-400"

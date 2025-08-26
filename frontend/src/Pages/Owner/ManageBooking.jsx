@@ -11,6 +11,8 @@ const ManageBooking = () => {
   const fetchOwnerBookings = async () => {
     try {
       const { data } = await axios.get('/api/bookings/owner');
+      console.log('data',data);
+      
       data.success ? setBookings(data.bookings) : toast.error(data.message);
     } catch (error) {
       toast.error(error.message)
@@ -87,7 +89,7 @@ const ManageBooking = () => {
 
                 <td className="p-4 max-md:hidden">
                   {booking.status === 'pending' ? (
-                    <select onChange={() => changeBookingStatus(booking._id,e.target.value)}
+                    <select onChange={(e) => changeBookingStatus(booking._id,e.target.value)}
                       className="border rounded-md p-1 text-sm"
                       value={booking.status}
 
